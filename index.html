@@ -6,7 +6,7 @@
 
 <title>Wedding Seat Finder</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 
@@ -20,56 +20,23 @@ body{
     font-family:'Poppins', sans-serif;
     background:#f6efe7;
     min-height:100vh;
-    overflow-x:hidden;
     color:#6b4b3e;
-    position:relative;
-}
-
-/* Background watercolor */
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background:
-        radial-gradient(circle at top left, rgba(201,160,122,0.15), transparent 35%),
-        radial-gradient(circle at bottom right, rgba(160,80,60,0.15), transparent 35%);
-    z-index:-2;
-}
-
-/* Floral corners */
-.flower-top{
-    position:absolute;
-    top:0;
-    left:0;
-    width:220px;
-    opacity:0.95;
-}
-
-.flower-bottom{
-    position:absolute;
-    right:0;
-    bottom:0;
-    width:240px;
-    opacity:0.95;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:24px;
 }
 
 .container{
     width:100%;
-    max-width:540px;
-    margin:auto;
-    padding:24px;
-    position:relative;
-    z-index:2;
+    max-width:520px;
 }
 
 .card{
-    background:rgba(255,255,255,0.88);
-    backdrop-filter:blur(10px);
+    background:rgba(255,255,255,0.92);
     border-radius:32px;
-    padding:36px 28px;
+    padding:40px 28px;
     box-shadow:0 10px 30px rgba(0,0,0,0.08);
-    overflow:hidden;
-    position:relative;
 }
 
 .small-title{
@@ -89,7 +56,7 @@ body::before{
 .infinity{
     text-align:center;
     font-size:28px;
-    margin:8px 0;
+    margin:10px 0;
 }
 
 .date{
@@ -100,49 +67,13 @@ body::before{
 }
 
 .section{
-    margin-top:34px;
+    margin-top:40px;
 }
 
 .label{
     margin-bottom:12px;
     font-weight:500;
-    font-size:15px;
 }
-
-/* Radio Buttons */
-
-.radio-group{
-    display:flex;
-    gap:14px;
-}
-
-.radio-card{
-    flex:1;
-}
-
-.radio-card input{
-    display:none;
-}
-
-.radio-card label{
-    display:block;
-    padding:15px;
-    text-align:center;
-    border-radius:18px;
-    border:2px solid #ead7cb;
-    background:white;
-    cursor:pointer;
-    transition:0.3s;
-    font-weight:500;
-}
-
-.radio-card input:checked + label{
-    background:linear-gradient(135deg,#b9856b,#8c5a42);
-    color:white;
-    border-color:#b9856b;
-}
-
-/* Input */
 
 .search-box{
     position:relative;
@@ -153,9 +84,9 @@ input[type="text"]{
     padding:16px;
     border-radius:18px;
     border:2px solid #ead7cb;
-    background:white;
     font-size:16px;
     outline:none;
+    background:white;
 }
 
 /* Suggestions */
@@ -218,8 +149,8 @@ button{
 }
 
 .loader-circle{
-    width:65px;
-    height:65px;
+    width:60px;
+    height:60px;
     border:5px solid #ead7cb;
     border-top:5px solid #b9856b;
     border-radius:50%;
@@ -252,13 +183,6 @@ button{
     margin-top:10px;
 }
 
-.floor-image{
-    width:100%;
-    margin-top:22px;
-    border-radius:24px;
-    border:3px solid #f0e3d8;
-}
-
 /* Error */
 
 .not-found{
@@ -276,24 +200,14 @@ button{
     font-size:13px;
 }
 
-/* Mobile */
-
 @media(max-width:480px){
 
     .couple-name{
-        font-size:54px;
+        font-size:52px;
     }
 
     .card{
-        padding:28px 20px;
-    }
-
-    .flower-top{
-        width:170px;
-    }
-
-    .flower-bottom{
-        width:180px;
+        padding:32px 22px;
     }
 
 }
@@ -302,18 +216,6 @@ button{
 </head>
 
 <body>
-
-<!-- Floral Decorations -->
-<img
-    class="flower-top"
-    src="https://i.imgur.com/L8R6L8T.png"
->
-
-<img
-    class="flower-bottom"
-    src="https://i.imgur.com/L8R6L8T.png"
-    style="transform:rotate(180deg);"
->
 
 <div class="container">
 
@@ -337,48 +239,7 @@ button{
             SATURDAY · 22.08.26
         </div>
 
-        <!-- SIDE SELECT -->
-
-        <div class="section">
-
-            <div class="label">
-                Select Invitation Side
-            </div>
-
-            <div class="radio-group">
-
-                <div class="radio-card">
-                    <input
-                        type="radio"
-                        id="bride"
-                        name="side"
-                        value="Bride"
-                        checked
-                    >
-
-                    <label for="bride">
-                        Bride Side
-                    </label>
-                </div>
-
-                <div class="radio-card">
-                    <input
-                        type="radio"
-                        id="groom"
-                        name="side"
-                        value="Groom"
-                    >
-
-                    <label for="groom">
-                        Groom Side
-                    </label>
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- NAME SEARCH -->
+        <!-- SEARCH -->
 
         <div class="section">
 
@@ -428,7 +289,7 @@ button{
             <div class="loader-circle"></div>
 
             <p style="margin-top:14px;">
-                Preparing your seat arrangement...
+                Searching for your seat...
             </p>
 
         </div>
@@ -448,12 +309,6 @@ button{
                 class="seat-number"
                 id="seatNumber"
             ></div>
-
-            <img
-                id="floorImage"
-                class="floor-image"
-                src=""
-            >
 
         </div>
 
@@ -487,41 +342,47 @@ nameInput.addEventListener("input", async function(){
     const keyword = this.value.trim();
 
     if(keyword.length < 1){
+
         suggestionsBox.innerHTML = "";
         return;
     }
 
-    const side =
-    document.querySelector(
-        'input[name="side"]:checked'
-    ).value;
+    try{
 
-    const response = await fetch(
-        `${apiUrl}?action=suggest&keyword=${encodeURIComponent(keyword)}&side=${encodeURIComponent(side)}`
-    );
+        const response = await fetch(
+            `${apiUrl}?action=suggest&keyword=${encodeURIComponent(keyword)}`
+        );
 
-    const data = await response.json();
+        const data = await response.json();
 
-    suggestionsBox.innerHTML = "";
+        suggestionsBox.innerHTML = "";
 
-    data.forEach(item => {
+        data.forEach(item => {
 
-        const div = document.createElement("div");
+            const div = document.createElement("div");
 
-        div.className = "suggestion-item";
+            div.className = "suggestion-item";
 
-        div.innerText = item.name;
+            div.innerText = item.name;
 
-        div.onclick = () => {
+            div.onclick = () => {
 
-            nameInput.value = item.name;
+                nameInput.value = item.name;
 
-            suggestionsBox.innerHTML = "";
-        };
+                suggestionsBox.innerHTML = "";
 
-        suggestionsBox.appendChild(div);
+            };
 
-    });
+            suggestionsBox.appendChild(div);
+
+        });
+
+    }
+    catch(error){
+
+        console.error(error);
+
+    }
 
 });
 
@@ -531,13 +392,10 @@ async function searchSeat(){
 
     const name = nameInput.value.trim();
 
-    const side =
-    document.querySelector(
-        'input[name="side"]:checked'
-    ).value;
-
     if(!name){
+
         alert("Please enter your name");
+
         return;
     }
 
@@ -550,7 +408,7 @@ async function searchSeat(){
     try{
 
         const response = await fetch(
-            `${apiUrl}?name=${encodeURIComponent(name)}&side=${encodeURIComponent(side)}`
+            `${apiUrl}?name=${encodeURIComponent(name)}`
         );
 
         const data = await response.json();
@@ -563,9 +421,6 @@ async function searchSeat(){
 
             document.getElementById("seatNumber").innerText =
             data.seat;
-
-            document.getElementById("floorImage").src =
-            data.imageUrl;
 
         }
         else{
@@ -598,8 +453,6 @@ function resetSearch(){
     document.getElementById("result").style.display = "none";
 
     document.getElementById("notFound").innerText = "";
-
-    document.getElementById("floorImage").src = "";
 
 }
 
