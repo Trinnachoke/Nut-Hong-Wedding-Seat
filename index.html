@@ -1,41 +1,609 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Seat Finder</title>
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <h1>Find Your Seat</h1>
+<title>Wedding Seat Finder</title>
 
-  <input type="text" id="name" placeholder="Enter your name">
-  <button onclick="searchSeat()">Search</button>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <p id="result"></p>
+<style>
 
-  <script>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-    const apiUrl = "https://script.google.com/macros/s/AKfycbxeZOcan_RUazGYWVMDgUq4dSZCEalSlNXXPy0Ngc_qM_fGw_i8d4j5a6u_eVEstcBu/exec";
+body{
+    font-family:'Poppins', sans-serif;
+    background:#f6efe7;
+    min-height:100vh;
+    overflow-x:hidden;
+    color:#6b4b3e;
+    position:relative;
+}
 
-    async function searchSeat() {
+/* Background watercolor */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at top left, rgba(201,160,122,0.15), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(160,80,60,0.15), transparent 35%);
+    z-index:-2;
+}
 
-      const name = document.getElementById("name").value;
+/* Floral corners */
+.flower-top{
+    position:absolute;
+    top:0;
+    left:0;
+    width:220px;
+    opacity:0.95;
+}
 
-      const response = await fetch(
-        `${apiUrl}?name=${encodeURIComponent(name)}`
-      );
+.flower-bottom{
+    position:absolute;
+    right:0;
+    bottom:0;
+    width:240px;
+    opacity:0.95;
+}
 
-      const data = await response.json();
+.container{
+    width:100%;
+    max-width:540px;
+    margin:auto;
+    padding:24px;
+    position:relative;
+    z-index:2;
+}
 
-      if (data.found) {
-        document.getElementById("result").innerText =
-          `Your seat is: ${data.seat}`;
-      } else {
-        document.getElementById("result").innerText =
-          "Name not found";
-      }
+.card{
+    background:rgba(255,255,255,0.88);
+    backdrop-filter:blur(10px);
+    border-radius:32px;
+    padding:36px 28px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    overflow:hidden;
+    position:relative;
+}
+
+.small-title{
+    text-align:center;
+    letter-spacing:4px;
+    font-size:12px;
+    margin-bottom:16px;
+}
+
+.couple-name{
+    font-family:'Great Vibes', cursive;
+    text-align:center;
+    font-size:62px;
+    line-height:1.1;
+}
+
+.infinity{
+    text-align:center;
+    font-size:28px;
+    margin:8px 0;
+}
+
+.date{
+    text-align:center;
+    margin-top:24px;
+    font-size:15px;
+    letter-spacing:3px;
+}
+
+.section{
+    margin-top:34px;
+}
+
+.label{
+    margin-bottom:12px;
+    font-weight:500;
+    font-size:15px;
+}
+
+/* Radio Buttons */
+
+.radio-group{
+    display:flex;
+    gap:14px;
+}
+
+.radio-card{
+    flex:1;
+}
+
+.radio-card input{
+    display:none;
+}
+
+.radio-card label{
+    display:block;
+    padding:15px;
+    text-align:center;
+    border-radius:18px;
+    border:2px solid #ead7cb;
+    background:white;
+    cursor:pointer;
+    transition:0.3s;
+    font-weight:500;
+}
+
+.radio-card input:checked + label{
+    background:linear-gradient(135deg,#b9856b,#8c5a42);
+    color:white;
+    border-color:#b9856b;
+}
+
+/* Input */
+
+.search-box{
+    position:relative;
+}
+
+input[type="text"]{
+    width:100%;
+    padding:16px;
+    border-radius:18px;
+    border:2px solid #ead7cb;
+    background:white;
+    font-size:16px;
+    outline:none;
+}
+
+/* Suggestions */
+
+.suggestions{
+    position:absolute;
+    width:100%;
+    background:white;
+    border-radius:16px;
+    margin-top:8px;
+    overflow:hidden;
+    box-shadow:0 8px 24px rgba(0,0,0,0.08);
+    z-index:999;
+}
+
+.suggestion-item{
+    padding:14px 16px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.suggestion-item:hover{
+    background:#f7eee8;
+}
+
+/* Buttons */
+
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:18px;
+    cursor:pointer;
+    font-size:16px;
+    transition:0.3s;
+}
+
+.search-btn{
+    margin-top:18px;
+    background:linear-gradient(135deg,#b9856b,#8c5a42);
+    color:white;
+}
+
+.search-btn:hover{
+    transform:translateY(-2px);
+}
+
+.reset-btn{
+    margin-top:12px;
+    background:#eee2d8;
+    color:#6b4b3e;
+}
+
+/* Loader */
+
+.loader{
+    display:none;
+    margin-top:28px;
+    text-align:center;
+}
+
+.loader-circle{
+    width:65px;
+    height:65px;
+    border:5px solid #ead7cb;
+    border-top:5px solid #b9856b;
+    border-radius:50%;
+    margin:auto;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
+/* Result */
+
+.result{
+    display:none;
+    margin-top:32px;
+    text-align:center;
+}
+
+.result-title{
+    font-size:18px;
+}
+
+.seat-number{
+    font-size:56px;
+    font-weight:600;
+    color:#8c5a42;
+    margin-top:10px;
+}
+
+.floor-image{
+    width:100%;
+    margin-top:22px;
+    border-radius:24px;
+    border:3px solid #f0e3d8;
+}
+
+/* Error */
+
+.not-found{
+    margin-top:24px;
+    text-align:center;
+    color:#b00020;
+}
+
+/* Footer */
+
+.footer{
+    margin-top:34px;
+    text-align:center;
+    letter-spacing:3px;
+    font-size:13px;
+}
+
+/* Mobile */
+
+@media(max-width:480px){
+
+    .couple-name{
+        font-size:54px;
     }
 
-  </script>
+    .card{
+        padding:28px 20px;
+    }
+
+    .flower-top{
+        width:170px;
+    }
+
+    .flower-bottom{
+        width:180px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Floral Decorations -->
+<img
+    class="flower-top"
+    src="https://i.imgur.com/L8R6L8T.png"
+>
+
+<img
+    class="flower-bottom"
+    src="https://i.imgur.com/L8R6L8T.png"
+    style="transform:rotate(180deg);"
+>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="small-title">
+            SAVE THE DATE FOR THE WEDDING OF
+        </div>
+
+        <div class="couple-name">
+            Nutchaya
+        </div>
+
+        <div class="infinity">∞</div>
+
+        <div class="couple-name">
+            Trinnachoke
+        </div>
+
+        <div class="date">
+            SATURDAY · 22.08.26
+        </div>
+
+        <!-- SIDE SELECT -->
+
+        <div class="section">
+
+            <div class="label">
+                Select Invitation Side
+            </div>
+
+            <div class="radio-group">
+
+                <div class="radio-card">
+                    <input
+                        type="radio"
+                        id="bride"
+                        name="side"
+                        value="Bride"
+                        checked
+                    >
+
+                    <label for="bride">
+                        Bride Side
+                    </label>
+                </div>
+
+                <div class="radio-card">
+                    <input
+                        type="radio"
+                        id="groom"
+                        name="side"
+                        value="Groom"
+                    >
+
+                    <label for="groom">
+                        Groom Side
+                    </label>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- NAME SEARCH -->
+
+        <div class="section">
+
+            <div class="label">
+                Enter Your Name
+            </div>
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Type your name..."
+                    autocomplete="off"
+                >
+
+                <div
+                    class="suggestions"
+                    id="suggestions"
+                ></div>
+
+            </div>
+
+            <button
+                class="search-btn"
+                onclick="searchSeat()"
+            >
+                Find My Seat
+            </button>
+
+            <button
+                class="reset-btn"
+                onclick="resetSearch()"
+            >
+                Reset
+            </button>
+
+        </div>
+
+        <!-- LOADER -->
+
+        <div
+            class="loader"
+            id="loader"
+        >
+
+            <div class="loader-circle"></div>
+
+            <p style="margin-top:14px;">
+                Preparing your seat arrangement...
+            </p>
+
+        </div>
+
+        <!-- RESULT -->
+
+        <div
+            class="result"
+            id="result"
+        >
+
+            <div class="result-title">
+                Your Seat Number
+            </div>
+
+            <div
+                class="seat-number"
+                id="seatNumber"
+            ></div>
+
+            <img
+                id="floorImage"
+                class="floor-image"
+                src=""
+            >
+
+        </div>
+
+        <!-- ERROR -->
+
+        <div
+            class="not-found"
+            id="notFound"
+        ></div>
+
+        <div class="footer">
+            #NHTOGETHER
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const apiUrl =
+"https://script.google.com/macros/s/AKfycbxeZOcan_RUazGYWVMDgUq4dSZCEalSlNXXPy0Ngc_qM_fGw_i8d4j5a6u_eVEstcBu/exec";
+
+const nameInput = document.getElementById("name");
+const suggestionsBox = document.getElementById("suggestions");
+
+/* AUTO SUGGEST */
+
+nameInput.addEventListener("input", async function(){
+
+    const keyword = this.value.trim();
+
+    if(keyword.length < 1){
+        suggestionsBox.innerHTML = "";
+        return;
+    }
+
+    const side =
+    document.querySelector(
+        'input[name="side"]:checked'
+    ).value;
+
+    const response = await fetch(
+        `${apiUrl}?action=suggest&keyword=${encodeURIComponent(keyword)}&side=${encodeURIComponent(side)}`
+    );
+
+    const data = await response.json();
+
+    suggestionsBox.innerHTML = "";
+
+    data.forEach(item => {
+
+        const div = document.createElement("div");
+
+        div.className = "suggestion-item";
+
+        div.innerText = item.name;
+
+        div.onclick = () => {
+
+            nameInput.value = item.name;
+
+            suggestionsBox.innerHTML = "";
+        };
+
+        suggestionsBox.appendChild(div);
+
+    });
+
+});
+
+/* SEARCH */
+
+async function searchSeat(){
+
+    const name = nameInput.value.trim();
+
+    const side =
+    document.querySelector(
+        'input[name="side"]:checked'
+    ).value;
+
+    if(!name){
+        alert("Please enter your name");
+        return;
+    }
+
+    document.getElementById("loader").style.display = "block";
+
+    document.getElementById("result").style.display = "none";
+
+    document.getElementById("notFound").innerText = "";
+
+    try{
+
+        const response = await fetch(
+            `${apiUrl}?name=${encodeURIComponent(name)}&side=${encodeURIComponent(side)}`
+        );
+
+        const data = await response.json();
+
+        document.getElementById("loader").style.display = "none";
+
+        if(data.found){
+
+            document.getElementById("result").style.display = "block";
+
+            document.getElementById("seatNumber").innerText =
+            data.seat;
+
+            document.getElementById("floorImage").src =
+            data.imageUrl;
+
+        }
+        else{
+
+            document.getElementById("notFound").innerText =
+            "Guest name not found";
+
+        }
+
+    }
+    catch(error){
+
+        document.getElementById("loader").style.display = "none";
+
+        document.getElementById("notFound").innerText =
+        "An error occurred while searching";
+
+    }
+
+}
+
+/* RESET */
+
+function resetSearch(){
+
+    nameInput.value = "";
+
+    suggestionsBox.innerHTML = "";
+
+    document.getElementById("result").style.display = "none";
+
+    document.getElementById("notFound").innerText = "";
+
+    document.getElementById("floorImage").src = "";
+
+}
+
+</script>
 
 </body>
 </html>
