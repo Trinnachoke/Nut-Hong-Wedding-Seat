@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Seat Finder</title>
+</head>
+<body>
+
+  <h1>Find Your Seat</h1>
+
+  <input type="text" id="name" placeholder="Enter your name">
+  <button onclick="searchSeat()">Search</button>
+
+  <p id="result"></p>
+
+  <script>
+
+    const apiUrl = "https://script.google.com/macros/s/AKfycbxeZOcan_RUazGYWVMDgUq4dSZCEalSlNXXPy0Ngc_qM_fGw_i8d4j5a6u_eVEstcBu/exec";
+
+    async function searchSeat() {
+
+      const name = document.getElementById("name").value;
+
+      const response = await fetch(
+        `${apiUrl}?name=${encodeURIComponent(name)}`
+      );
+
+      const data = await response.json();
+
+      if (data.found) {
+        document.getElementById("result").innerText =
+          `Your seat is: ${data.seat}`;
+      } else {
+        document.getElementById("result").innerText =
+          "Name not found";
+      }
+    }
+
+  </script>
+
+</body>
+</html>
