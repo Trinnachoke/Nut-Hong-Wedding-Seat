@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -20,11 +21,11 @@ body{
     font-family:'Poppins', sans-serif;
     background:#f6efe7;
     min-height:100vh;
-    color:#6b4b3e;
     display:flex;
     justify-content:center;
     align-items:center;
     padding:24px;
+    color:#6b4b3e;
 }
 
 .container{
@@ -33,7 +34,7 @@ body{
 }
 
 .card{
-    background:rgba(255,255,255,0.92);
+    background:white;
     border-radius:32px;
     padding:40px 28px;
     box-shadow:0 10px 30px rgba(0,0,0,0.08);
@@ -56,7 +57,7 @@ body{
 .infinity{
     text-align:center;
     font-size:28px;
-    margin:10px 0;
+    margin:8px 0;
 }
 
 .date{
@@ -75,6 +76,8 @@ body{
     font-weight:500;
 }
 
+/* SEARCH BOX */
+
 .search-box{
     position:relative;
 }
@@ -84,12 +87,12 @@ input[type="text"]{
     padding:16px;
     border-radius:18px;
     border:2px solid #ead7cb;
+    background:white;
     font-size:16px;
     outline:none;
-    background:white;
 }
 
-/* Suggestions */
+/* SUGGESTIONS */
 
 .suggestions{
     position:absolute;
@@ -100,6 +103,8 @@ input[type="text"]{
     overflow:hidden;
     box-shadow:0 8px 24px rgba(0,0,0,0.08);
     z-index:999;
+    max-height:300px;
+    overflow-y:auto;
 }
 
 .suggestion-item{
@@ -112,7 +117,7 @@ input[type="text"]{
     background:#f7eee8;
 }
 
-/* Buttons */
+/* BUTTONS */
 
 button{
     width:100%;
@@ -140,7 +145,7 @@ button{
     color:#6b4b3e;
 }
 
-/* Loader */
+/* LOADER */
 
 .loader{
     display:none;
@@ -164,7 +169,7 @@ button{
     }
 }
 
-/* Result */
+/* RESULT */
 
 .result{
     display:none;
@@ -183,7 +188,7 @@ button{
     margin-top:10px;
 }
 
-/* Error */
+/* ERROR */
 
 .not-found{
     margin-top:24px;
@@ -191,7 +196,7 @@ button{
     color:#b00020;
 }
 
-/* Footer */
+/* FOOTER */
 
 .footer{
     margin-top:34px;
@@ -199,6 +204,8 @@ button{
     letter-spacing:3px;
     font-size:13px;
 }
+
+/* MOBILE */
 
 @media(max-width:480px){
 
@@ -213,6 +220,7 @@ button{
 }
 
 </style>
+
 </head>
 
 <body>
@@ -239,7 +247,7 @@ button{
             SATURDAY · 22.08.26
         </div>
 
-        <!-- SEARCH -->
+        <!-- SEARCH SECTION -->
 
         <div class="section">
 
@@ -332,18 +340,27 @@ button{
 const apiUrl =
 "https://script.google.com/macros/s/AKfycbxeZOcan_RUazGYWVMDgUq4dSZCEalSlNXXPy0Ngc_qM_fGw_i8d4j5a6u_eVEstcBu/exec";
 
-const nameInput = document.getElementById("name");
-const suggestionsBox = document.getElementById("suggestions");
+const nameInput =
+document.getElementById("name");
 
-/* AUTO SUGGEST */
+const suggestionsBox =
+document.getElementById("suggestions");
+
+/* =====================================
+   LIVE SEARCH SUGGESTIONS
+===================================== */
 
 nameInput.addEventListener("input", async function(){
 
-    const keyword = this.value.trim();
+    const keyword =
+    this.value.trim();
 
-    if(keyword.length < 1){
+    // CLEAR IF EMPTY
+
+    if(keyword.length === 0){
 
         suggestionsBox.innerHTML = "";
+
         return;
     }
 
@@ -353,21 +370,48 @@ nameInput.addEventListener("input", async function(){
             `${apiUrl}?action=suggest&keyword=${encodeURIComponent(keyword)}`
         );
 
-        const data = await response.json();
+        const data =
+        await response.json();
 
         suggestionsBox.innerHTML = "";
 
+        // NO MATCHES
+
+        if(data.length === 0){
+
+            const div =
+            document.createElement("div");
+
+            div.className =
+            "suggestion-item";
+
+            div.innerText =
+            "No matching names";
+
+            suggestionsBox.appendChild(div);
+
+            return;
+        }
+
+        // CREATE SUGGESTION LIST
+
         data.forEach(item => {
 
-            const div = document.createElement("div");
+            const div =
+            document.createElement("div");
 
-            div.className = "suggestion-item";
+            div.className =
+            "suggestion-item";
 
-            div.innerText = item.name;
+            div.innerText =
+            item.name;
+
+            // SELECT NAME
 
             div.onclick = () => {
 
-                nameInput.value = item.name;
+                nameInput.value =
+                item.name;
 
                 suggestionsBox.innerHTML = "";
 
@@ -386,11 +430,14 @@ nameInput.addEventListener("input", async function(){
 
 });
 
-/* SEARCH */
+/* =====================================
+   SEARCH SEAT
+===================================== */
 
 async function searchSeat(){
 
-    const name = nameInput.value.trim();
+    const name =
+    nameInput.value.trim();
 
     if(!name){
 
@@ -399,11 +446,14 @@ async function searchSeat(){
         return;
     }
 
-    document.getElementById("loader").style.display = "block";
+    document.getElementById("loader")
+    .style.display = "block";
 
-    document.getElementById("result").style.display = "none";
+    document.getElementById("result")
+    .style.display = "none";
 
-    document.getElementById("notFound").innerText = "";
+    document.getElementById("notFound")
+    .innerText = "";
 
     try{
 
@@ -411,21 +461,25 @@ async function searchSeat(){
             `${apiUrl}?name=${encodeURIComponent(name)}`
         );
 
-        const data = await response.json();
+        const data =
+        await response.json();
 
-        document.getElementById("loader").style.display = "none";
+        document.getElementById("loader")
+        .style.display = "none";
 
         if(data.found){
 
-            document.getElementById("result").style.display = "block";
+            document.getElementById("result")
+            .style.display = "block";
 
-            document.getElementById("seatNumber").innerText =
-            data.seat;
+            document.getElementById("seatNumber")
+            .innerText = data.seat;
 
         }
         else{
 
-            document.getElementById("notFound").innerText =
+            document.getElementById("notFound")
+            .innerText =
             "Guest name not found";
 
         }
@@ -433,16 +487,20 @@ async function searchSeat(){
     }
     catch(error){
 
-        document.getElementById("loader").style.display = "none";
+        document.getElementById("loader")
+        .style.display = "none";
 
-        document.getElementById("notFound").innerText =
+        document.getElementById("notFound")
+        .innerText =
         "An error occurred while searching";
 
     }
 
 }
 
-/* RESET */
+/* =====================================
+   RESET
+===================================== */
 
 function resetSearch(){
 
@@ -450,11 +508,30 @@ function resetSearch(){
 
     suggestionsBox.innerHTML = "";
 
-    document.getElementById("result").style.display = "none";
+    document.getElementById("result")
+    .style.display = "none";
 
-    document.getElementById("notFound").innerText = "";
+    document.getElementById("notFound")
+    .innerText = "";
 
 }
+
+/* =====================================
+   CLOSE SUGGESTIONS WHEN CLICK OUTSIDE
+===================================== */
+
+document.addEventListener("click", function(e){
+
+    if(
+        !nameInput.contains(e.target) &&
+        !suggestionsBox.contains(e.target)
+    ){
+
+        suggestionsBox.innerHTML = "";
+
+    }
+
+});
 
 </script>
 
