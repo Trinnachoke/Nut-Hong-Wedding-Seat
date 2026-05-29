@@ -57,7 +57,7 @@ body{
 .infinity{
     text-align:center;
     font-size:28px;
-    margin:8px 0;
+    margin:4px 0;
 }
 
 .date{
@@ -76,13 +76,15 @@ body{
     font-weight:500;
 }
 
-/* SEARCH BOX */
+/* =========================================
+   COMBOBOX
+========================================= */
 
-.search-box{
+.combo-container{
     position:relative;
 }
 
-input[type="text"]{
+.combo-input{
     width:100%;
     padding:16px;
     border-radius:18px;
@@ -92,28 +94,29 @@ input[type="text"]{
     outline:none;
 }
 
-/* SUGGESTIONS */
+/* DROPDOWN */
 
-.suggestions{
+.dropdown{
     position:absolute;
     width:100%;
     background:white;
-    border-radius:16px;
+    border-radius:18px;
     margin-top:8px;
     overflow:hidden;
     box-shadow:0 8px 24px rgba(0,0,0,0.08);
     z-index:999;
     max-height:300px;
     overflow-y:auto;
+    display:none;
 }
 
-.suggestion-item{
+.dropdown-item{
     padding:14px 16px;
     cursor:pointer;
     transition:0.2s;
 }
 
-.suggestion-item:hover{
+.dropdown-item:hover{
     background:#f7eee8;
 }
 
@@ -205,8 +208,6 @@ button{
     font-size:13px;
 }
 
-/* MOBILE */
-
 @media(max-width:480px){
 
     .couple-name{
@@ -230,7 +231,7 @@ button{
     <div class="card">
 
         <div class="small-title">
-            SAVE THE DATE FOR THE WEDDING OF
+            WELCOME TO THE WEDDING OF
         </div>
 
         <div class="couple-name">
@@ -244,7 +245,7 @@ button{
         </div>
 
         <div class="date">
-            SATURDAY · 22.08.26
+            SATURDAY 22.08.26 @ KEP Phuket
         </div>
 
         <!-- SEARCH SECTION -->
@@ -252,21 +253,22 @@ button{
         <div class="section">
 
             <div class="label">
-                Enter Your Name
+                Select Your Name
             </div>
 
-            <div class="search-box">
+            <div class="combo-container">
 
                 <input
                     type="text"
-                    id="name"
-                    placeholder="Type your name..."
+                    id="nameInput"
+                    class="combo-input"
+                    placeholder="Type or select your name..."
                     autocomplete="off"
                 >
 
                 <div
-                    class="suggestions"
-                    id="suggestions"
+                    id="dropdown"
+                    class="dropdown"
                 ></div>
 
             </div>
@@ -337,32 +339,28 @@ button{
 
 <script>
 
+/* =========================================
+   API URL
+========================================= */
+
 const apiUrl =
 "https://script.google.com/macros/s/AKfycbxeZOcan_RUazGYWVMDgUq4dSZCEalSlNXXPy0Ngc_qM_fGw_i8d4j5a6u_eVEstcBu/exec";
 
+/* =========================================
+   ELEMENTS
+========================================= */
+
 const nameInput =
-document.getElementById("name");
+document.getElementById("nameInput");
 
-const suggestionsBox =
-document.getElementById("suggestions");
+const dropdown =
+document.getElementById("dropdown");
 
-/* =====================================
-   LIVE SEARCH SUGGESTIONS
-===================================== */
+/* =========================================
+   LOAD / FILTER NAMES
+========================================= */
 
-nameInput.addEventListener("input", async function(){
-
-    const keyword =
-    this.value.trim();
-
-    // CLEAR IF EMPTY
-
-    if(keyword.length === 0){
-
-        suggestionsBox.innerHTML = "";
-
-        return;
-    }
+async function loadNames(keyword = ""){
 
     try{
 
@@ -373,9 +371,7 @@ nameInput.addEventListener("input", async function(){
         const data =
         await response.json();
 
-        suggestionsBox.innerHTML = "";
-
-        // NO MATCHES
+        dropdown.innerHTML = "";
 
         if(data.length === 0){
 
@@ -383,17 +379,18 @@ nameInput.addEventListener("input", async function(){
             document.createElement("div");
 
             div.className =
-            "suggestion-item";
+            "dropdown-item";
 
             div.innerText =
             "No matching names";
 
-            suggestionsBox.appendChild(div);
+            dropdown.appendChild(div);
+
+            dropdown.style.display =
+            "block";
 
             return;
         }
-
-        // CREATE SUGGESTION LIST
 
         data.forEach(item => {
 
@@ -401,25 +398,27 @@ nameInput.addEventListener("input", async function(){
             document.createElement("div");
 
             div.className =
-            "suggestion-item";
+            "dropdown-item";
 
             div.innerText =
             item.name;
-
-            // SELECT NAME
 
             div.onclick = () => {
 
                 nameInput.value =
                 item.name;
 
-                suggestionsBox.innerHTML = "";
+                dropdown.style.display =
+                "none";
 
             };
 
-            suggestionsBox.appendChild(div);
+            dropdown.appendChild(div);
 
         });
+
+        dropdown.style.display =
+        "block";
 
     }
     catch(error){
@@ -428,11 +427,49 @@ nameInput.addEventListener("input", async function(){
 
     }
 
+}
+
+/* =========================================
+   SHOW ALL NAMES WHEN CLICKING INPUT
+========================================= */
+
+nameInput.addEventListener("focus", function(){
+
+    loadNames("");
+
 });
 
-/* =====================================
+/* =========================================
+   FILTER NAMES WHILE TYPING
+========================================= */
+
+nameInput.addEventListener("input", function(){
+
+    loadNames(this.value);
+
+});
+
+/* =========================================
+   CLOSE DROPDOWN WHEN CLICK OUTSIDE
+========================================= */
+
+document.addEventListener("click", function(e){
+
+    if(
+        !nameInput.contains(e.target) &&
+        !dropdown.contains(e.target)
+    ){
+
+        dropdown.style.display =
+        "none";
+
+    }
+
+});
+
+/* =========================================
    SEARCH SEAT
-===================================== */
+========================================= */
 
 async function searchSeat(){
 
@@ -441,7 +478,7 @@ async function searchSeat(){
 
     if(!name){
 
-        alert("Please enter your name");
+        alert("Please select your name");
 
         return;
     }
@@ -473,7 +510,8 @@ async function searchSeat(){
             .style.display = "block";
 
             document.getElementById("seatNumber")
-            .innerText = data.seat;
+            .innerText =
+            data.seat;
 
         }
         else{
@@ -498,15 +536,18 @@ async function searchSeat(){
 
 }
 
-/* =====================================
+/* =========================================
    RESET
-===================================== */
+========================================= */
 
 function resetSearch(){
 
     nameInput.value = "";
 
-    suggestionsBox.innerHTML = "";
+    dropdown.innerHTML = "";
+
+    dropdown.style.display =
+    "none";
 
     document.getElementById("result")
     .style.display = "none";
@@ -515,23 +556,6 @@ function resetSearch(){
     .innerText = "";
 
 }
-
-/* =====================================
-   CLOSE SUGGESTIONS WHEN CLICK OUTSIDE
-===================================== */
-
-document.addEventListener("click", function(e){
-
-    if(
-        !nameInput.contains(e.target) &&
-        !suggestionsBox.contains(e.target)
-    ){
-
-        suggestionsBox.innerHTML = "";
-
-    }
-
-});
 
 </script>
 
